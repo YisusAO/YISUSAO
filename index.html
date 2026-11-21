@@ -128,11 +128,22 @@ function open(w,i){
   const n=works[(i+1)%works.length];
   box.innerHTML=`<a class="close mono">Cerrar ✕</a><h2>${w.t}</h2>
   <div class="meta mono"><div><span>Categoría</span>${w.c}</div><div><span>Servicio</span>${w.s}</div><div><span>Año</span>${w.y}</div></div>
-  ${w.v?`<a class="frame poster" href="https://vimeo.com/${w.v}" target="_blank" rel="noopener" aria-label="Ver video en Vimeo" title="Ver video en Vimeo" style="background-image:url(${w.im[big]});aspect-ratio:${w.ar||"16/9"}"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a>`:(w.im?`<img class="frame" src="${w.im[big]}" alt="${w.t}" style="aspect-ratio:${w.ar||"16/9"};object-fit:cover;display:block">`:`<div class="frame mono">Video principal</div>`)}
+  ${w.v?`<a class="frame poster" data-v="${w.v}" href="https://vimeo.com/${w.v}" target="_blank" rel="noopener" aria-label="Ver video en Vimeo" title="Ver video en Vimeo" style="background-image:url(${w.im[big]});aspect-ratio:${w.ar||"16/9"}"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a>`:(w.im?`<img class="frame" src="${w.im[big]}" alt="${w.t}" style="aspect-ratio:${w.ar||"16/9"};object-fit:cover;display:block">`:`<div class="frame mono">Video principal</div>`)}
   <div class="pair">${w.im?o.map(k=>`<img class="frame" src="${w.im[k]}" alt="${w.t}" style="aspect-ratio:${w.ar||"16/9"}">`).join(""):`<div class="frame mono">Still 01</div><div class="frame mono">Still 02</div>`}</div>
   <div class="credits mono">${w.cr.map(c=>`<div><span>${c[0]}</span>${c[1]}</div>`).join("")}</div>
   <p class="mono" style="margin-top:6vh"><a id="next" style="cursor:pointer">Siguiente: ${n.t} →</a></p>`;
   box.classList.add("on");box.scrollTop=0;peek.classList.remove("on");
+  const po=box.querySelector(".poster");
+  if(po)po.onclick=e=>{
+    e.preventDefault();
+    const f=document.createElement("iframe");
+    f.src="https://player.vimeo.com/video/"+po.dataset.v+"?autoplay=1&title=0&byline=0&portrait=0&dnt=1";
+    f.allow="autoplay; fullscreen; picture-in-picture";f.setAttribute("allowfullscreen","");
+    f.title=w.t;f.style.cssText="position:absolute;inset:0;width:100%;height:100%;border:0";
+    const d=document.createElement("div");d.className="frame";
+    d.style.cssText="position:relative;overflow:hidden;background:#000;aspect-ratio:"+(po.style.aspectRatio||"16/9");
+    d.appendChild(f);po.replaceWith(d);
+  };
   box.querySelector(".close").onclick=()=>box.classList.remove("on");
   box.querySelector("#next").onclick=()=>open(n,(i+1)%works.length);
 }
